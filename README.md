@@ -29,6 +29,34 @@ The 29th Regime doctrine: *Governance is a legal fiction; Sovereignty is determi
 
 Protocol specification: [SPECIFICATION.md](SPECIFICATION.md)
 
+### Architecture Overview
+```mermaid
+flowchart TB
+  G[npu-compliance-guardrails\nPublic enforcement node]
+
+  subgraph H[Governed proprietary architecture]
+    V[Vending Machines]
+    P[Operational Pods]
+    R[RAG Oracles]
+    X[Additional sovereign nodes\ntotal governed nodes: 15]
+  end
+
+  V --> PR1[Pull request]
+  P --> PR2[Pull request]
+  R --> PR3[Pull request]
+  X --> PR4[Pull request]
+
+  PR1 --> G
+  PR2 --> G
+  PR3 --> G
+  PR4 --> G
+
+  G --> OPA[OPA plus Rego evaluation]
+  OPA --> D{Deny rule matched?}
+  D -- Yes --> B[HARD DENY\nmerge blocked]
+  D -- No --> M[Policy pass\nmerge path open]
+```
+
 ---
 
 ## SCOPE
