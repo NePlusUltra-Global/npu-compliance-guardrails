@@ -228,82 +228,55 @@ This repository enforces the following regulatory frameworks:
 
 ### Directory Structure
 
-```
-npu-compliance-guardrails/
-├── policies/
-│   ├── sovereignty/           # EU data residency, geofencing
-│   │   └── data_residency.rego
-│   ├── security/              # Encryption at rest/transit, access control
-│   │   └── encryption_at_rest_transit.rego
-│   └── cost-efficiency/       # Resource right-sizing, waste prevention
-│       └── rightsizing_guardrails.rego
-│
-├── modules/
-│   └── npu-sovereign-logging-s3/  # Reusable audit trail module
-│       └── main.tf, variables.tf, outputs.tf
-│
-├── examples/
-│   └── multi-region-eu/       # Production-ready multi-region deployment
-│       └── main.tf (primary + secondary regions)
-│
-├── tests/
-│   ├── terraform/
-│   │   └── sovereignty_enforcement.tftest.hcl
-│   └── checkov/
-│       └── .checkov.yml
-│
-├── main.tf                    # Root enforcement node
-├── variables.tf
-├── LIQUIDATION_REPORT_2026-04-19.md  # Forensic audit findings
-└── README.md (this file)
+```mermaid
+flowchart TB
+  R[npu-compliance-guardrails]
+
+  R --> P[policies]
+  P --> PS[sovereignty]
+  PS --> PS1[data_residency.rego]
+  P --> PC[security]
+  PC --> PC1[encryption_at_rest_transit.rego]
+  P --> PE[cost-efficiency]
+  PE --> PE1[rightsizing_guardrails.rego]
+
+  R --> M[modules]
+  M --> M1[npu-sovereign-logging-s3]
+  M1 --> M2[main.tf and variables.tf and outputs.tf]
+
+  R --> E[examples]
+  E --> E1[multi-region-eu]
+  E1 --> E2[main.tf primary and secondary regions]
+
+  R --> T[tests]
+  T --> T1[terraform]
+  T1 --> T2[sovereignty_enforcement.tftest.hcl]
+  T --> T3[checkov]
+  T3 --> T4[.checkov.yml]
+
+  R --> F1[main.tf]
+  R --> F2[variables.tf]
+  R --> F3[LIQUIDATION_REPORT_2026-04-19.md]
+  R --> F4[README.md]
 ```
 
 ### Data Flow
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  Developer: terraform apply                                 │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│  Step 1: Terraform Validate                                 │
-│  - Syntax correctness                                       │
-│  - Type checking                                            │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│  Step 2: OPA Policy Evaluation                              │
-│  - data_residency.rego (geofencing)                         │
-│  - encryption_at_rest_transit.rego (encryption mandatory)  │
-│  - rightsizing_guardrails.rego (cost guardrails)           │
-│  ✗ HARD DENY on policy violation                            │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│  Step 3: Checkov Scanning (CI/CD Integration)              │
-│  - Framework-specific checks                               │
-│  - Custom compliance rules                                 │
-│  ✗ HARD FAIL on CRITICAL severity                          │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│  Step 4: Terraform Tests (deterministic verification)      │
-│  - Region compliance (EU-only)                             │
-│  - Encryption enforcement                                  │
-│  - Retention period validation                             │
-│  ✗ TEST FAILURE halts deployment                            │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│  ✓ APPROVED: Deploy to primary (EU-West-1)                 │
-│  ✓ APPROVED: Deploy to secondary (EU-Central-1)            │
-│  ✓ AUDIT TRAIL: Immutable logs in versioned S3 buckets     │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+  A[Developer: terraform apply] --> B[Step 1: Terraform validate\nsyntax and type checks]
+  B --> C[Step 2: OPA policy evaluation\ndata_residency.rego\nencryption_at_rest_transit.rego\nrightsizing_guardrails.rego]
+  C --> D{Policy violation?}
+  D -- Yes --> X[HARD DENY]
+  X --> X1[Deployment blocked]
+  D -- No --> E[Step 3: Checkov scanning\nframework and custom compliance checks]
+  E --> F{Critical finding?}
+  F -- Yes --> Y[HARD FAIL]
+  Y --> Y1[Deployment blocked]
+  F -- No --> G[Step 4: Terraform tests\nregion compliance\nencryption enforcement\nretention validation]
+  G --> H{Any test failure?}
+  H -- Yes --> Z[Test failure\ndeployment halted]
+  H -- No --> I[APPROVED deployment\nprimary eu-west-1 and secondary eu-central-1\nimmutable audit logs in versioned S3]
 ```
 
 ---
