@@ -1,0 +1,89 @@
+# 29TH REGIME: Git Ignore Configuration
+# Excludes ephemeral files from version control
+
+# Terraform State & Lock Files
+*.tfstate
+*.tfstate.*
+*.tflock.hcl
+.terraform/
+.terraform.lock.hcl
+
+# Terraform Cloud
+terraform.tfvars
+terraform.tfvars.json
+.terraformignore
+
+# Terraform Test Artifacts
+*.tftest.hcl~
+tfplan
+tfplan.json
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# OPA/Checkov Artifacts
+checkov-results.sarif
+.opa-cache/
+opa_bundle/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# Build artifacts
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# AWS/Cloud credentials (NEVER COMMIT)
+.aws/
+.azure/
+.gcp/
+credentials.json
+token.json
+secrets.yaml
+.vault-token
+
+# Python virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Node modules (if any JavaScript artifacts)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Docker artifacts
+.docker/
+docker-compose.override.yml
+.dockerignore
+
+# Policy-generated files
+policy-violations.json
+compliance-report.json
+
+# Excluded by design (no version control needed)
+*.bak
+*.orig
+*.rej

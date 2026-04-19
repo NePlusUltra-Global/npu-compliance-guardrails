@@ -1,0 +1,152 @@
+---
+# 29TH REGIME: CHECKOV BASELINE CONFIGURATION
+# Purpose: Policy-as-code compliance scanning for infrastructure
+# Tool: Checkov (https://www.checkov.io)
+# Scan: Terraform, CloudFormation, Kubernetes, Helm, Docker
+---
+
+framework:
+  - terraform
+  - cloudformation
+  - dockerfile
+  - kubernetes
+
+## ============================================================================
+## SOVEREIGNTY CHECKS (GDPR/NIS2 Compliance)
+## ============================================================================
+
+checks:
+  # Geofencing: Enforce EU-only data residency
+  - id: CKV_AWS_REGION_ENFORCE_EU
+    name: "Enforce AWS region to EU-only (GDPR Article 32)"
+    resource: "aws_*"
+    condition: |
+      region in ['eu-west-1', 'eu-central-1', 'eu-north-1']
+    framework: terraform
+    severity: CRITICAL
+
+  # Encryption at rest (mandatory)
+  - id: CKV_AWS_ENCRYPT_AT_REST
+    name: "Enforce encryption at rest for all storage"
+    resource: "aws_s3_bucket"
+    condition: |
+      server_side_encryption_configuration.enabled == true AND
+      server_side_encryption_configuration.sse_algorithm == "aws:kms"
+    framework: terraform
+    severity: CRITICAL
+
+  # Versioning (immutability for audit trails)
+  - id: CKV_AWS_VERSION_ENABLED
+    name: "Enable versioning for audit trail immutability"
+    resource: "aws_s3_bucket"
+    condition: |
+      versioning.enabled == true
+    framework: terraform
+    severity: HIGH
+
+  # Block public access
+  - id: CKV_AWS_BLOCK_PUBLIC
+    name: "Block public access to S3 buckets"
+    resource: "aws_s3_bucket_public_access_block"
+    condition: |
+      block_public_acls == true AND
+      block_public_policy == true AND
+      ignore_public_acls == true AND
+      restrict_public_buckets == true
+    framework: terraform
+    severity: CRITICAL
+
+  # TLS enforcement (HTTPS-only)
+  - id: CKV_AWS_TLS_MANDATORY
+    name: "Enforce TLS 1.2+ for all connections"
+    resource: "aws_*"
+    condition: |
+      tls_version >= "1.2"
+    framework: terraform
+    severity: HIGH
+
+  # Database encryption
+  - id: CKV_AWS_DB_ENCRYPT
+    name: "Enable encryption at rest for databases"
+    resource: "aws_db_instance"
+    condition: |
+      storage_encrypted == true AND
+      kms_key_id is not empty
+    framework: terraform
+    severity: CRITICAL
+
+  # Network security (no overly permissive rules)
+  - id: CKV_AWS_SECURITY_GROUP_RESTRICT
+    name: "Restrict inbound rules to specific CIDR/security groups"
+    resource: "aws_security_group_rule"
+    condition: |
+      (from_port >= 1024 OR protocol != "tcp") AND
+      cidr_ipv4 != "0.0.0.0/0" AND
+      referenced_security_group_id is not empty
+    framework: terraform
+    severity: HIGH
+
+## ============================================================================
+## COST EFFICIENCY CHECKS
+## ============================================================================
+
+cost_checks:
+  - id: CKV_AWS_OVERSIZED_COMPUTE
+    name: "Flag oversized compute instances (potential cost waste)"
+    resource: "aws_instance"
+    condition: |
+      instance_type in ['c5.4xlarge', 'c5.9xlarge', 'c5.18xlarge', 'm5.8xlarge', 'm5.12xlarge']
+    framework: terraform
+    severity: MEDIUM
+
+  - id: CKV_AWS_LIFECYCLE_POLICY
+    name: "Enforce lifecycle policies for S3 buckets"
+    resource: "aws_s3_bucket"
+    condition: |
+      lifecycle_rule.transition.days <= 30 AND
+      lifecycle_rule.transition.storage_class == "GLACIER"
+    framework: terraform
+    severity: MEDIUM
+
+## ============================================================================
+## EXCLUSIONS (Approved Deviations)
+## ============================================================================
+
+exclude:
+  # Exclude dev environment from NIS2 checks (pre-prod)
+  - check_ids:
+      - CKV_AWS_REGION_ENFORCE_EU
+    resource_patterns:
+      - "aws_*"
+    tags:
+      environment: "dev"
+
+  # Allow temporary test buckets (10 days)
+  - check_ids:
+      - CKV_AWS_BLOCK_PUBLIC
+    resource_patterns:
+      - "aws_s3_bucket_test*"
+    tags:
+      purpose: "temporary_testing"
+
+## ============================================================================
+## REPORTING & ENFORCEMENT
+## ============================================================================
+
+reporting:
+  format: sarif  # SARIF format for CI/CD integration
+  output_file: checkov-results.sarif
+  fail_on_severity: CRITICAL
+  success_exit_code: 0
+  failure_exit_code: 1
+
+enforcement:
+  block_on_check_failure:
+    - CKV_AWS_REGION_ENFORCE_EU  # Geofencing is mandatory
+    - CKV_AWS_ENCRYPT_AT_REST     # Encryption is non-negotiable
+    - CKV_AWS_BLOCK_PUBLIC        # Public access is forbidden
+    - CKV_AWS_DB_ENCRYPT          # Database encryption mandatory
+  
+  warn_on_check_failure:
+    - CKV_AWS_OVERSIZED_COMPUTE   # Cost optimization (warning, not block)
+    - CKV_AWS_LIFECYCLE_POLICY    # Lifecycle (warning, not block)
