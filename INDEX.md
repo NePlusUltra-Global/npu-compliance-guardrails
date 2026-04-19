@@ -26,6 +26,26 @@
 - **Testing:** [tests/terraform/](tests/terraform/), [tests/checkov/](tests/checkov/)
 - **License:** [LICENSE](LICENSE) — Apache 2.0
 
+### Auditor Workflow (Sequence)
+```mermaid
+sequenceDiagram
+  participant CISO as CISO or Auditor
+  participant Repo as npu-compliance-guardrails
+  participant CI as CI/CD Pipeline
+  participant OPA as OPA Rego Engine
+  participant GH as GitHub Checks
+
+  CISO->>Repo: Request compliance evidence
+  Repo-->>CISO: Provide policy and test links
+  CISO->>Repo: Inspect /policies and /tests
+
+  Note over CI,OPA: On every pull request
+  CI->>OPA: Evaluate Terraform plan against Rego rules
+  OPA-->>CI: Deny or Allow decision
+  CI->>GH: Publish hard fail or pass status
+  GH-->>CISO: Immutable run logs and decision trail
+```
+
 ---
 
 ## REPOSITORY STRUCTURE
