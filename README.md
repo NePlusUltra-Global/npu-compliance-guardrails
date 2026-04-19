@@ -27,6 +27,8 @@ Governance frameworks (GDPR, NIS2, FADP) establish *legal requirements*. This co
 
 The 29th Regime doctrine: *Governance is a legal fiction; Sovereignty is deterministic enforcement.*
 
+Protocol specification: [SPECIFICATION.md](SPECIFICATION.md)
+
 ---
 
 ## SCOPE

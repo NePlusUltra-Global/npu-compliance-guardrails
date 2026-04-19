@@ -12,6 +12,7 @@
 
 ### For Architects & DevOps
 - **Start here:** [README.md](README.md) — doctrine, scope, and compliance framework
+- **Protocol Specification:** [SPECIFICATION.md](SPECIFICATION.md) — deterministic legal-to-code enforcement model
 - **Deploy:** [examples/multi-region-eu/main.tf](examples/multi-region-eu/main.tf) — production-ready multi-region setup
 - **Policies:** [policies/](policies/) — OPA/Rego enforcement rules
 
