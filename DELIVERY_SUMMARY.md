@@ -204,25 +204,13 @@ npu-compliance-guardrails/
 **File:** `examples/multi-region-eu/main.tf` (200 lines)
 
 **Architecture:**
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ Primary Region: EU-West-1 (Ireland)                             │
-│ - Audit Trail Bucket (versioned, encrypted, KMS key)            │
-│ - Data: GDPR hub, primary jurisdiction                          │
-└─────────────────────┬───────────────────────────────────────────┘
-                      │
-              ┌───────▼────────┐
-              │ Cross-Region   │
-              │ Replication    │
-              │ (S3 RTC)       │
-              └───────┬────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────────────┐
-│ Secondary Region: EU-Central-1 (Frankfurt)                      │
-│ - Replicated Audit Trail Bucket (standby, encrypted, same KMS)  │
-│ - Data: Redundancy, legal jurisdiction (FADP/German law)        │
-└─────────────────────────────────────────────────────────────────┘
-```
+
+See [`examples/multi-region-eu/README.md`](examples/multi-region-eu/README.md) for the complete architecture diagram with Mermaid flowchart.
+
+Summary:
+- **Primary Region:** eu-west-1 (Ireland) — GDPR hub with audit trail bucket (versioned, encrypted, KMS key)
+- **Secondary Region:** eu-central-1 (Frankfurt) — Redundancy with cross-region replication (S3 RTC)
+- **Encryption:** KMS-managed keys, same across regions, 7-year retention
 
 **Deployment:**
 ```bash
@@ -453,13 +441,9 @@ This repository embodies the 29th Regime principle: *Architecture is not aspirat
 **Jurisdiction:** EU (GDPR, NIS2, FADP Compliant)  
 **License:** Apache 2.0
 
-```
-╔═══════════════════════════════════════════════════════════════╗
-║  Governance is a legal fiction.                              ║
-║  Architecture is law.                                        ║
-║  Sovereignty is enforcement.                                 ║
-║                                                               ║
-║  29th Regime — European Digital Sovereignty                  ║
-║  https://neplusultra.eu                                      ║
-╚═══════════════════════════════════════════════════════════════╝
-```
+> **Governance is a legal fiction.**  
+> **Architecture is law.**  
+> **Sovereignty is enforcement.**  
+> 
+> 29th Regime — European Digital Sovereignty  
+> [https://neplusultra.eu](https://neplusultra.eu)

@@ -4,28 +4,11 @@
 # Demonstrates: Reusable modules, cross-region audit trails, deterministic enforcement
 #
 # ARCHITECTURE:
-# 
-# ┌──────────────────────────────────────────────────────────────────┐
-# │ Primary Region: EU-West-1 (Ireland)                              │
-# │ ┌────────────────────────────────────────────────────────────┐  │
-# │ │ Audit Trail Bucket (versioned, encrypted, KMS key)         │  │
-# │ │ - Data: GDPR hub, primary jurisdiction                     │  │
-# │ └────────────────────────────────────────────────────────────┘  │
-# └──────────────────────────┬───────────────────────────────────────┘
-#                            │
-#                     ┌──────▼──────┐
-#                     │   S3 RTC    │
-#                     │ Replication │
-#                     │  Cross-EU   │
-#                     └──────┬──────┘
-#                            │
-# ┌──────────────────────────▼───────────────────────────────────────┐
-# │ Secondary Region: EU-Central-1 (Frankfurt)                       │
-# │ ┌────────────────────────────────────────────────────────────┐  │
-# │ │ Replicated Audit Trail Bucket (encrypted, same KMS)        │  │
-# │ │ - Data: Redundancy, legal jurisdiction (FADP/German law)   │  │
-# │ └────────────────────────────────────────────────────────────┘  │
-# └──────────────────────────────────────────────────────────────────┘
+# See README.md for full architecture diagram (Mermaid flowchart).
+# This configuration deploys:
+#  - Primary: eu-west-1 (Ireland) — GDPR hub with audit trail bucket
+#  - Secondary: eu-central-1 (Frankfurt) — redundancy with cross-region replication
+#  - Encryption: KMS-managed keys, versioning enabled, retention 7 years
 #
 ################################################################################
 

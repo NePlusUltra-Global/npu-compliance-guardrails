@@ -1,16 +1,10 @@
 # 29TH REGIME // POLICY ENFORCEMENT NODE
 
-```
-╔═══════════════════════════════════════════════════════════════════════════╗
-║                                                                           ║
-║  SOVEREIGNTY IS DETERMINISTIC ENFORCEMENT                               ║
-║  Governance is a legal fiction; Architecture is law.                     ║
-║                                                                           ║
-║  29th Regime — European Digital Sovereignty & Technical Debt Liquidation  ║
-║  https://neplusultra.eu                                                  ║
-║                                                                           ║
-╚═══════════════════════════════════════════════════════════════════════════╝
-```
+> **SOVEREIGNTY IS DETERMINISTIC ENFORCEMENT**  
+> Governance is a legal fiction; Architecture is law.
+>
+> 29th Regime — European Digital Sovereignty & Technical Debt Liquidation  
+> [https://neplusultra.eu](https://neplusultra.eu)
 
 ---
 
@@ -423,14 +417,8 @@ This codebase represents a technical architecture standard, not negotiable recom
 
 ---
 
-```
-╔═══════════════════════════════════════════════════════════════════════════╗
-║                                                                           ║
-║  "Architecture is law. Governance is computation."                       ║
-║  — 29th Regime Doctrine                                                   ║
-║                                                                           ║
-║  Sovereignty is not granted; it is enforced.                             ║
-║  https://neplusultra.eu                                                  ║
-║                                                                           ║
-╚═══════════════════════════════════════════════════════════════════════════╝
-```
+> **"Architecture is law. Governance is computation."**  
+> — 29th Regime Doctrine
+>
+> Sovereignty is not granted; it is enforced.  
+> [https://neplusultra.eu](https://neplusultra.eu)
