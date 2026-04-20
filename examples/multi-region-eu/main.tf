@@ -2,6 +2,31 @@
 # 29TH REGIME: MULTI-REGION EU SOVEREIGNTY ENFORCEMENT
 # Example: Deploying to EU-West-1 (Ireland) + EU-Central-1 (Frankfurt)
 # Demonstrates: Reusable modules, cross-region audit trails, deterministic enforcement
+#
+# ARCHITECTURE:
+# 
+# ┌──────────────────────────────────────────────────────────────────┐
+# │ Primary Region: EU-West-1 (Ireland)                              │
+# │ ┌────────────────────────────────────────────────────────────┐  │
+# │ │ Audit Trail Bucket (versioned, encrypted, KMS key)         │  │
+# │ │ - Data: GDPR hub, primary jurisdiction                     │  │
+# │ └────────────────────────────────────────────────────────────┘  │
+# └──────────────────────────┬───────────────────────────────────────┘
+#                            │
+#                     ┌──────▼──────┐
+#                     │   S3 RTC    │
+#                     │ Replication │
+#                     │  Cross-EU   │
+#                     └──────┬──────┘
+#                            │
+# ┌──────────────────────────▼───────────────────────────────────────┐
+# │ Secondary Region: EU-Central-1 (Frankfurt)                       │
+# │ ┌────────────────────────────────────────────────────────────┐  │
+# │ │ Replicated Audit Trail Bucket (encrypted, same KMS)        │  │
+# │ │ - Data: Redundancy, legal jurisdiction (FADP/German law)   │  │
+# │ └────────────────────────────────────────────────────────────┘  │
+# └──────────────────────────────────────────────────────────────────┘
+#
 ################################################################################
 
 terraform {
